@@ -1,0 +1,42 @@
+.auth-form__container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	align-items: stretch;
+	width: min(320px, 100%);
+	margin-inline: auto;
+}
+
+.auth-form__inputs-group {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.auth-form__label {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	align-items: stretch;
+	width: 100%;
+	text-align: left;
+}
+
+.auth-form__input {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.auth-form__buttons-group {
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+	width: 100%;
+}
+
+.auth-form__error {
+	margin: 0;
+	text-align: right;
+	color: #c2410c;
+	font-size: 14px;
+}

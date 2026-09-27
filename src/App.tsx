@@ -3,9 +3,22 @@ import heroImg from './assets/hero.png';
 import reactLogo from './assets/react.svg';
 import viteLogo from './assets/vite.svg';
 import './App.css';
+import { AuthForm } from './auth/AuthForm';
+import { useAuth } from './auth/useAuth';
 
 function App() {
 	const [count, setCount] = useState(0);
+	const { credentials, isEditingCredentials, login, openCredentialsEditor, closeCredentialsEditor } = useAuth();
+
+	if (isEditingCredentials) {
+		return (
+			<AuthForm
+				initial={credentials}
+				onSubmit={login}
+				onCancel={credentials ? closeCredentialsEditor : undefined}
+			/>
+		);
+	}
 
 	return (
 		<>
@@ -21,6 +34,9 @@ function App() {
 						Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
 					</p>
 				</div>
+				<button type="button" className="counter" onClick={openCredentialsEditor}>
+					Авторизация
+				</button>
 				<button
 					type="button"
 					className="counter"
