@@ -1,4 +1,5 @@
 import type { AuthCredentials } from './AuthCredentials';
+import { DEFAULT_GREEN_API_URL } from '../api/config';
 
 const STORAGE_KEY = 'green-api-auth';
 
@@ -6,7 +7,10 @@ function isAuthCredentials(value: unknown): value is AuthCredentials {
 	if (!value || typeof value !== 'object') return false;
 
 	const data = value as Record<string, unknown>;
+	const apiUrlOk = data.apiUrl === undefined || typeof data.apiUrl === 'string';
+
 	return (
+		apiUrlOk &&
 		typeof data.idInstance === 'string' &&
 		data.idInstance.trim() !== '' &&
 		typeof data.apiTokenInstance === 'string' &&
@@ -29,9 +33,16 @@ export function getCredentials(): AuthCredentials | null {
 			return null;
 		}
 
+		const data = parsed as {
+			apiUrl?: string;
+			idInstance: string;
+			apiTokenInstance: string;
+		};
+
 		return {
-			idInstance: parsed.idInstance.trim(),
-			apiTokenInstance: parsed.apiTokenInstance.trim(),
+			apiUrl: data.apiUrl?.trim() || DEFAULT_GREEN_API_URL,
+			idInstance: data.idInstance.trim(),
+			apiTokenInstance: data.apiTokenInstance.trim(),
 		};
 	} catch {
 		localStorage.removeItem(STORAGE_KEY);

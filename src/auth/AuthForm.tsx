@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { AuthCredentials } from './AuthCredentials';
+import { DEFAULT_GREEN_API_URL } from '../api/config';
 import './AuthForm.css';
 
 type AuthFormProps = {
@@ -8,22 +9,27 @@ type AuthFormProps = {
 	onCancel?: () => void;
 };
 
+const emptyCredentials = (): AuthCredentials => ({
+	apiUrl: DEFAULT_GREEN_API_URL,
+	idInstance: '',
+	apiTokenInstance: '',
+});
+
 export function AuthForm({ initial, onSubmit, onCancel }: AuthFormProps) {
-	const [credentials, setCredentials] = useState(
-		initial ?? { idInstance: '', apiTokenInstance: '' },
-	);
+	const [credentials, setCredentials] = useState(initial ?? emptyCredentials());
 	const [error, setError] = useState('');
 
 	function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
 		e.preventDefault();
 
-		const next = {
+		const next: AuthCredentials = {
+			apiUrl: credentials.apiUrl.trim() || DEFAULT_GREEN_API_URL,
 			idInstance: credentials.idInstance.trim(),
 			apiTokenInstance: credentials.apiTokenInstance.trim(),
 		};
 
 		if (!next.idInstance || !next.apiTokenInstance) {
-			setError('Заполните оба поля');
+			setError('Заполните idInstance и apiTokenInstance');
 			return;
 		}
 
@@ -35,6 +41,19 @@ export function AuthForm({ initial, onSubmit, onCancel }: AuthFormProps) {
 		<form onSubmit={handleSubmit} className="auth-form">
 			<div className="auth-form__container">
 				<div className="auth-form__inputs-group">
+					<label className="auth-form__label">
+						<span>GREEN-API URL</span>
+						<input
+							className="auth-form__input"
+							type="url"
+							placeholder={DEFAULT_GREEN_API_URL}
+							value={credentials.apiUrl}
+							onChange={(e) => {
+								setError('');
+								setCredentials({ ...credentials, apiUrl: e.target.value });
+							}}
+						/>
+					</label>
 					<label className="auth-form__label">
 						<span>ID Instance</span>
 						<input

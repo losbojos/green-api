@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { GreenApiClient } from '../api/client';
 import type { AuthCredentials } from './AuthCredentials';
 import {
 	clearCredentials,
@@ -11,10 +12,25 @@ export function useAuth() {
 	const [isEditingCredentials, setIsEditingCredentials] =
 		useState(!credentials);
 
-	function login(next: AuthCredentials) {
+	async function login(next: AuthCredentials) {
 		saveCredentials(next);
 		setCredentials(next);
 		setIsEditingCredentials(false);
+
+		const client = new GreenApiClient(
+			next.apiUrl,
+			next.idInstance,
+			next.apiTokenInstance,
+		);
+
+		try {
+			await client.setSettings({
+				webhookUrl: '',
+				incomingWebhook: 'yes',
+			});
+		} catch (error) {
+			console.error('setSettings не применился', error);
+		}
 	}
 
 	function logout() {

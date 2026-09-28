@@ -8,19 +8,21 @@
 		"build": "tsc -b && vite build",
 		"lint": "oxlint",
 		"preview": "vite preview",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"smoke": "npx tsx --env-file=.env src/test/smokeTest.ts"
 	},
 	"dependencies": {
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8"
 	},
 	"devDependencies": {
-		"@types/node": "^24.13.3",
+		"@types/node": "^24.19.0",
 		"@types/react": "^19.2.18",
 		"@types/react-dom": "^19.2.7",
 		"@vitejs/plugin-react": "^6.1.1",
 		"oxlint": "^1.81.0",
 		"prettier": "^3.9.9",
+		"tsx": "^4.23.15",
 		"typescript": "~6.0.2",
 		"vite": "^8.3.0"
 	}
