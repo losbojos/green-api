@@ -8,8 +8,9 @@
 }
 
 .chat-sidebar {
-	width: 280px;
-	flex-shrink: 0;
+	flex: 0 1 280px;
+	max-width: 100%;
+	min-width: 0;
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
@@ -53,4 +54,19 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+@media (max-width: 720px) {
+	.chat-sidebar {
+		flex-basis: 100%;
+		border-right: none;
+	}
+
+	.chat-layout.chat-open .chat-sidebar {
+		display: none;
+	}
+
+	.chat-layout:not(.chat-open) .chat-window__placeholder {
+		display: none;
+	}
 }

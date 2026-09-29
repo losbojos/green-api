@@ -160,7 +160,7 @@ export function ChatLayout({ credentials }: Props) {
 	}
 
 	return (
-		<div className="chat-layout">
+		<div className={`chat-layout${selectedChat ? ' chat-open' : ''}`}>
 			<aside className="chat-sidebar">
 				<div className="chat-sidebar__header">
 					<h2 className="chat-sidebar__title">Чаты</h2>
@@ -195,6 +195,7 @@ export function ChatLayout({ credentials }: Props) {
 					chat={selectedChat}
 					messages={messages.get(selectedChat.id) || []}
 					onSend={sendMessage}
+					onBack={() => setSelectedChat(null)}
 					receiveError={receiveError}
 				/>
 			) : (

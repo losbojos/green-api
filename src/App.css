@@ -40,6 +40,17 @@
 	min-height: 0;
 }
 
+@media (max-width: 720px) {
+	.page {
+		padding: 12px;
+		gap: 12px;
+	}
+
+	.page-header h1 {
+		font-size: 22px;
+	}
+}
+
 button {
 	font: inherit;
 	padding: 8px 14px;

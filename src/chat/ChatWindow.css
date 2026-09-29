@@ -6,8 +6,28 @@
 	min-height: 0;
 }
 
-.chat-window > .chat-item {
+.chat-window__header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 	flex-shrink: 0;
+	padding: 8px;
+	border-bottom: 1px solid var(--border);
+}
+
+.chat-window__contact {
+	flex: 1;
+	min-width: 0;
+}
+
+.chat-window__back {
+	display: none;
+}
+
+@media (max-width: 720px) {
+	.chat-window__back {
+		display: inline-flex;
+	}
 }
 
 .chat-window__message-list {

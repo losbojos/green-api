@@ -14,10 +14,17 @@ type Props = {
 	chat: Chat;
 	messages: ChatMessage[];
 	onSend: (text: string) => Promise<void>;
+	onBack?: () => void;
 	receiveError?: string;
 };
 
-export function ChatWindow({ chat, messages, onSend, receiveError = '' }: Props) {
+export function ChatWindow({
+	chat,
+	messages,
+	onSend,
+	onBack,
+	receiveError = '',
+}: Props) {
 	const [text, setText] = useState('');
 	const [sending, setSending] = useState(false);
 	const [sendError, setSendError] = useState('');
@@ -77,7 +84,16 @@ export function ChatWindow({ chat, messages, onSend, receiveError = '' }: Props)
 
 	return (
 		<section className="chat-window">
-			<ChatListItem chat={chat} selected={false} onSelect={() => {}} />
+			<header className="chat-window__header">
+				{onBack && (
+					<Button type="button" className="chat-window__back" onClick={onBack}>
+						←
+					</Button>
+				)}
+				<div className="chat-window__contact">
+					<ChatListItem chat={chat} selected={false} onSelect={() => {}} />
+				</div>
+			</header>
 			<div className="chat-window__message-list" ref={listRef}>
 				{messages.map((msg) => (
 					<div key={msg.id} className={`chat-message ${msg.direction}`}>
