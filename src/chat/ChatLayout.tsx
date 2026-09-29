@@ -35,9 +35,12 @@ export function ChatLayout({ credentials }: Props) {
 		new Map<string, ChatMessage[]>(),
 	);
 	const chatsRef = useRef(chats);
-	chatsRef.current = chats;
 	const selectedChatRef = useRef(selectedChat);
-	selectedChatRef.current = selectedChat;
+
+	useEffect(() => {
+		chatsRef.current = chats;
+		selectedChatRef.current = selectedChat;
+	}, [chats, selectedChat]);
 
 	useEffect(() => {
 		saveChats(credentials.idInstance, chats);
@@ -69,9 +72,7 @@ export function ChatLayout({ credentials }: Props) {
 					if (selectedChatRef.current?.id !== message.chatId) {
 						setChats((prev) =>
 							prev.map((c) =>
-								c.id === message.chatId
-									? { ...c, unread: c.unread + 1 }
-									: c,
+								c.id === message.chatId ? { ...c, unread: c.unread + 1 } : c,
 							),
 						);
 					}
@@ -131,9 +132,7 @@ export function ChatLayout({ credentials }: Props) {
 	function selectChat(chat: Chat) {
 		setReceiveError('');
 		const opened = { ...chat, unread: 0 };
-		setChats((prev) =>
-			prev.map((c) => (c.id === chat.id ? opened : c)),
-		);
+		setChats((prev) => prev.map((c) => (c.id === chat.id ? opened : c)));
 		setSelectedChat(opened);
 	}
 
