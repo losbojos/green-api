@@ -5,6 +5,8 @@ import { ChatListItem } from './ChatListItem';
 import { getChats, saveChats } from './chatStorage';
 import { FindByPhoneModal } from './FindByPhoneModal';
 import './ChatLayout.css';
+import { ChatWindow } from './ChatWindow';
+import type { Chat, ChatMessage } from './types';
 
 type Props = {
 	credentials: AuthCredentials;
@@ -22,9 +24,12 @@ export function ChatLayout({ credentials }: Props) {
 	);
 
 	const [chats, setChats] = useState(() => getChats(credentials.idInstance));
-	const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+	const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
 	const [isFindOpen, setIsFindOpen] = useState(false);
 	const [error, setError] = useState('');
+	const [messages, setMessages] = useState<Map<string, ChatMessage[]>>(
+		new Map<string, ChatMessage[]>(),
+	);
 
 	useEffect(() => {
 		saveChats(credentials.idInstance, chats);
@@ -43,25 +48,51 @@ export function ChatLayout({ credentials }: Props) {
 			}
 
 			const info = await client.getContactInfo(chatId);
+			const newChat = {
+				id: chatId,
+				phone,
+				name: info.name || info.contactName || phone,
+				avatar: info.avatar || '',
+				unread: 0,
+			};
+
 			setChats((prev) => {
-				if (prev.some((c) => c.id === chatId)) return prev;
-				return [
-					...prev,
-					{
-						id: chatId,
-						phone,
-						name: info.name || info.contactName || phone,
-						avatar: info.avatar || '',
-						unread: 0,
-					},
-				];
+				let found = false;
+				const next = prev.map((c) => {
+					if (c.id !== chatId) return c;
+					found = true;
+					return newChat;
+				});
+				return found ? next : [...prev, newChat];
 			});
-			setSelectedChatId(chatId);
+
+			setSelectedChat(newChat);
 			setIsFindOpen(false);
 		} catch (e) {
 			console.error(e);
 			setError('Не удалось найти пользователя');
 		}
+	}
+
+	async function sendMessage(text: string) {
+		if (!selectedChat) return;
+
+		const chatId = selectedChat.id;
+		const idMessage = await client.sendMessage(chatId, text);
+
+		setMessages((prev) => {
+			const next = new Map(prev);
+			next.set(chatId, [
+				...(next.get(chatId) ?? []),
+				{
+					id: idMessage,
+					text,
+					direction: 'outgoing',
+					timestamp: Date.now(),
+				},
+			]);
+			return next;
+		});
 	}
 
 	return (
@@ -88,17 +119,25 @@ export function ChatLayout({ credentials }: Props) {
 							<ChatListItem
 								key={chat.id}
 								chat={chat}
-								selected={chat.id === selectedChatId}
-								onSelect={() => setSelectedChatId(chat.id)}
+								selected={chat.id === selectedChat?.id}
+								onSelect={() => setSelectedChat(chat)}
 							/>
 						))
 					)}
 				</div>
 			</aside>
 
-			<section className="chat-window">
-				<p className="chat-window__placeholder">Выберите чат</p>
-			</section>
+			{selectedChat ? (
+				<ChatWindow
+					chat={selectedChat}
+					messages={messages.get(selectedChat.id) || []}
+					onSend={sendMessage}
+				/>
+			) : (
+				<section className="chat-window__placeholder">
+					<p className="chat-window__placeholder-text">Выберите чат</p>
+				</section>
+			)}
 
 			{isFindOpen && (
 				<FindByPhoneModal
