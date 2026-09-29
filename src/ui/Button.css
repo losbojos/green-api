@@ -1,0 +1,23 @@
+.btn {
+	font: inherit;
+	padding: 8px 14px;
+	border-radius: 8px;
+	color: #fff;
+	background: var(--chat-action);
+	border: none;
+	cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+	background: color-mix(in srgb, var(--chat-action) 85%, #000);
+	border-color: transparent;
+}
+
+.btn:active:not(:disabled) {
+	background: color-mix(in srgb, var(--chat-action) 70%, #000);
+}
+
+.btn:disabled {
+	opacity: 0.5;
+	cursor: default;
+}

@@ -7,6 +7,7 @@ import { FindByPhoneModal } from './FindByPhoneModal';
 import './ChatLayout.css';
 import { ChatWindow } from './ChatWindow';
 import type { Chat, ChatMessage } from '../model/types';
+import { Button } from '../ui/Button';
 
 type Props = {
 	credentials: AuthCredentials;
@@ -136,16 +137,15 @@ export function ChatLayout({ credentials }: Props) {
 			<aside className="chat-sidebar">
 				<div className="chat-sidebar__header">
 					<h2 className="chat-sidebar__title">Чаты</h2>
-					<button
+					<Button
 						type="button"
-						className="chat-sidebar__new"
 						onClick={() => {
 							setError('');
 							setIsFindOpen(true);
 						}}
 					>
 						+
-					</button>
+					</Button>
 				</div>
 				<div className="chat-sidebar__list">
 					{chats.length === 0 ? (

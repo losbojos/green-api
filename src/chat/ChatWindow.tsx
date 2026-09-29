@@ -5,6 +5,7 @@ import {
 	type KeyboardEvent,
 	type SubmitEvent,
 } from 'react';
+import { Button } from '../ui/Button';
 import { ChatListItem } from './ChatListItem';
 import type { Chat, ChatMessage } from '../model/types';
 import './ChatWindow.css';
@@ -19,15 +20,20 @@ export function ChatWindow({ chat, messages, onSend }: Props) {
 	const [text, setText] = useState('');
 	const [sending, setSending] = useState(false);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const listRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		const el = textareaRef.current;
 		if (!el) return;
 
-		// автоподстройка высоты textarea:
 		el.style.height = 'auto';
 		el.style.height = `${el.scrollHeight}px`;
 	}, [text]);
+
+	useEffect(() => {
+		const el = listRef.current;
+		if (el) el.scrollTop = el.scrollHeight;
+	}, [messages]);
 
 	async function submit(e: SubmitEvent) {
 		e.preventDefault();
@@ -42,6 +48,7 @@ export function ChatWindow({ chat, messages, onSend }: Props) {
 			console.error(err);
 		} finally {
 			setSending(false);
+			textareaRef.current?.focus();
 		}
 	}
 
@@ -55,7 +62,7 @@ export function ChatWindow({ chat, messages, onSend }: Props) {
 	return (
 		<section className="chat-window">
 			<ChatListItem chat={chat} selected={false} onSelect={() => {}} />
-			<div className="chat-window__message-list">
+			<div className="chat-window__message-list" ref={listRef}>
 				{messages.map((msg) => (
 					<div key={msg.id} className={`chat-message ${msg.direction}`}>
 						<p className="chat-message__text">{msg.text}</p>
@@ -79,11 +86,11 @@ export function ChatWindow({ chat, messages, onSend }: Props) {
 					value={text}
 					onChange={(e) => setText(e.target.value)}
 					onKeyDown={onKeyDown}
-					disabled={sending}
+					readOnly={sending}
 				/>
-				<button type="submit" disabled={sending || !text.trim()}>
+				<Button type="submit" disabled={sending || !text.trim()}>
 					{sending ? '...' : '>'}
-				</button>
+				</Button>
 			</form>
 		</section>
 	);

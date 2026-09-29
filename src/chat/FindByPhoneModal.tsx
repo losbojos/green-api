@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from '../ui/Button';
 import './FindByPhoneModal.css';
 
 type Props = {
@@ -36,7 +37,7 @@ export function FindByPhoneModal({ onClose, onFind, error }: Props) {
 					onChange={(e) => setPhone(e.target.value)}
 				/>
 				{error && <p className="find-modal__error">{error}</p>}
-				<button type="submit">Найти в MAX</button>
+				<Button type="submit">Найти в MAX</Button>
 			</form>
 		</div>
 	);

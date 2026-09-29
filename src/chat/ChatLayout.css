@@ -1,7 +1,7 @@
 .chat-layout {
 	display: flex;
 	flex: 1;
-	min-height: 420px;
+	min-height: 0;
 	border: 1px solid var(--border);
 	border-radius: 8px;
 	overflow: hidden;
@@ -16,6 +16,7 @@
 	padding: 12px;
 	border-right: 1px solid var(--border);
 	background: var(--social-bg);
+	min-height: 0;
 }
 
 .chat-sidebar__header {
@@ -31,20 +32,6 @@
 	color: var(--text-h);
 }
 
-.chat-sidebar__new {
-	width: 32px;
-	height: 32px;
-	padding: 0;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 8px;
-	font-size: 24px;
-	background-color: var(--chat-action);
-	color: #fff;
-	padding-bottom: 5px;
-}
-
 .chat-sidebar__list {
 	flex: 1;
 	display: flex;
@@ -54,8 +41,16 @@
 }
 
 .chat-sidebar__empty,
-.chat-window__placeholder {
+.chat-window__placeholder-text {
 	margin: 0;
 	color: var(--text);
 	font-size: 15px;
+}
+
+.chat-window__placeholder {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }

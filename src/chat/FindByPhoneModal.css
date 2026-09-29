@@ -39,12 +39,6 @@
 	color: var(--text-h);
 }
 
-.find-modal__panel button[type='submit'] {
-	color: #fff;
-	background: var(--chat-action);
-	border-radius: 14px;
-}
-
 .find-modal__error {
 	margin: 0;
 	font-size: 14px;
