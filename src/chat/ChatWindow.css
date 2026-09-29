@@ -54,6 +54,15 @@
 	white-space: nowrap;
 }
 
+.chat-error {
+	margin: 0;
+	padding: 8px 12px;
+	flex-shrink: 0;
+	font-size: 14px;
+	color: var(--attention);
+	background: color-mix(in srgb, var(--attention) 12%, transparent);
+}
+
 .chat-window__sender {
 	display: flex;
 	align-items: center;

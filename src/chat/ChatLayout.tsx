@@ -28,6 +28,7 @@ export function ChatLayout({ credentials }: Props) {
 	const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
 	const [isFindOpen, setIsFindOpen] = useState(false);
 	const [error, setError] = useState('');
+	const [receiveError, setReceiveError] = useState('');
 	const [messages, setMessages] = useState<Map<string, ChatMessage[]>>(
 		new Map<string, ChatMessage[]>(),
 	);
@@ -48,6 +49,7 @@ export function ChatLayout({ credentials }: Props) {
 						MAX_RECEIVE_TIMEOUT,
 						controller.signal,
 					);
+					setReceiveError('');
 					if (!message) continue;
 					if (!chatsRef.current.some((chat) => chat.id === message.chatId)) {
 						continue; // Игнорим сообщения для которых у нас нет чатов (потому что нет пользователей в списке)
@@ -62,6 +64,7 @@ export function ChatLayout({ credentials }: Props) {
 				} catch (e) {
 					if (controller.signal.aborted) break;
 					console.error(e);
+					setReceiveError('Не удалось получить сообщения');
 					await new Promise((r) => setTimeout(r, 2000));
 				}
 			}
@@ -103,6 +106,7 @@ export function ChatLayout({ credentials }: Props) {
 			});
 
 			setSelectedChat(newChat);
+			setReceiveError('');
 			setIsFindOpen(false);
 		} catch (e) {
 			console.error(e);
@@ -156,7 +160,10 @@ export function ChatLayout({ credentials }: Props) {
 								key={chat.id}
 								chat={chat}
 								selected={chat.id === selectedChat?.id}
-								onSelect={() => setSelectedChat(chat)}
+								onSelect={() => {
+									setReceiveError('');
+									setSelectedChat(chat);
+								}}
 							/>
 						))
 					)}
@@ -168,6 +175,7 @@ export function ChatLayout({ credentials }: Props) {
 					chat={selectedChat}
 					messages={messages.get(selectedChat.id) || []}
 					onSend={sendMessage}
+					receiveError={receiveError}
 				/>
 			) : (
 				<section className="chat-window__placeholder">

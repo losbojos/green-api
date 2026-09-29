@@ -14,13 +14,17 @@ type Props = {
 	chat: Chat;
 	messages: ChatMessage[];
 	onSend: (text: string) => Promise<void>;
+	receiveError?: string;
 };
 
-export function ChatWindow({ chat, messages, onSend }: Props) {
+export function ChatWindow({ chat, messages, onSend, receiveError = '' }: Props) {
 	const [text, setText] = useState('');
 	const [sending, setSending] = useState(false);
+	const [sendError, setSendError] = useState('');
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const listRef = useRef<HTMLDivElement>(null);
+	const draftsRef = useRef<Record<string, string>>({});
+	const error = sendError || receiveError;
 
 	useEffect(() => {
 		const el = textareaRef.current;
@@ -35,17 +39,29 @@ export function ChatWindow({ chat, messages, onSend }: Props) {
 		if (el) el.scrollTop = el.scrollHeight;
 	}, [messages]);
 
+	useEffect(() => {
+		setText(draftsRef.current[chat.id] ?? '');
+		setSendError('');
+	}, [chat.id]);
+
+	function setDraft(value: string) {
+		setText(value);
+		draftsRef.current[chat.id] = value;
+	}
+
 	async function submit(e: SubmitEvent) {
 		e.preventDefault();
 		const value = text.trim();
 		if (!value || sending) return;
 
 		setSending(true);
+		setSendError('');
 		try {
 			await onSend(value);
-			setText('');
+			setDraft('');
 		} catch (err) {
 			console.error(err);
+			setSendError('Не удалось отправить сообщение');
 		} finally {
 			setSending(false);
 			textareaRef.current?.focus();
@@ -75,6 +91,7 @@ export function ChatWindow({ chat, messages, onSend }: Props) {
 					</div>
 				))}
 			</div>
+			{error && <p className="chat-error">{error}</p>}
 			<form
 				className={`chat-window__sender${sending ? ' sending' : ''}`}
 				onSubmit={submit}
@@ -84,7 +101,7 @@ export function ChatWindow({ chat, messages, onSend }: Props) {
 					rows={1}
 					placeholder="Сообщение"
 					value={text}
-					onChange={(e) => setText(e.target.value)}
+					onChange={(e) => setDraft(e.target.value)}
 					onKeyDown={onKeyDown}
 					readOnly={sending}
 				/>
