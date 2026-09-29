@@ -1,3 +1,5 @@
+import type { ChatMessage } from '../model/types';
+
 export const MIN_RECEIVE_TIMEOUT = 5;
 export const MAX_RECEIVE_TIMEOUT = 60;
 
@@ -92,8 +94,9 @@ export class GreenApiClient {
 
 	async receiveTextMessage(
 		seconds = MIN_RECEIVE_TIMEOUT,
-	): Promise<string | null> {
-		const body = await this.receiveMessage(seconds);
+		signal?: AbortSignal,
+	): Promise<ChatMessage | null> {
+		const body = await this.receiveMessage(seconds, signal);
 		if (!body || body.typeWebhook !== 'incomingMessageReceived') {
 			return null;
 		}
@@ -103,20 +106,38 @@ export class GreenApiClient {
 			return null;
 		}
 
+		let text: string | null = null;
 		switch (messageData.typeMessage) {
 			case 'textMessage':
 			case 'editedMessage':
-				return messageData.textMessageData?.textMessage ?? null;
+				text = messageData.textMessageData?.textMessage ?? null;
+				break;
+
 			case 'extendedTextMessage':
 			case 'quotedMessage':
-				return messageData.extendedTextMessageData?.text ?? null;
+				text = messageData.extendedTextMessageData?.text ?? null;
+				break;
+
 			default:
-				return null;
+				text = null;
 		}
+
+		if (!text || text.trim() === '') {
+			return null;
+		}
+
+		return {
+			id: body.idMessage,
+			chatId: body.senderData.chatId,
+			text,
+			direction: 'incoming',
+			timestamp: Number(body.timestamp) * 1000,
+		};
 	}
 
 	async receiveMessage(
 		seconds = MIN_RECEIVE_TIMEOUT,
+		signal?: AbortSignal,
 	): Promise<IncomingNotificationBody | null> {
 		if (
 			!Number.isInteger(seconds) ||
@@ -130,7 +151,7 @@ export class GreenApiClient {
 
 		const response = await fetch(
 			this.url('receiveNotification', `?receiveTimeout=${seconds}`),
-			{ method: 'GET' },
+			{ method: 'GET', signal },
 		);
 
 		if (!response.ok) {
@@ -165,15 +186,21 @@ export class GreenApiClient {
 			reason?: string;
 		};
 		if (!data.result) {
-			throw new Error(
-				`не удалось удалить уведомление из очереди: ${data.reason}`,
-			);
+			const reason = data.reason ?? '';
+			// Ошибки удаления почему то возникают
+			if (/not found/i.test(reason)) {
+				console.log(`not found: ${reason}`);
+				return;
+			}
+			throw new Error(`не удалось удалить уведомление из очереди: ${reason}`);
 		}
 	}
 }
 
 export type IncomingNotificationBody = {
 	typeWebhook: string;
+	timestamp: number;
+	idMessage: string;
 	senderData: {
 		chatId: string;
 	};

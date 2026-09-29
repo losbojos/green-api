@@ -6,7 +6,7 @@ import {
 	type SubmitEvent,
 } from 'react';
 import { ChatListItem } from './ChatListItem';
-import type { Chat, ChatMessage } from './types';
+import type { Chat, ChatMessage } from '../model/types';
 import './ChatWindow.css';
 
 type Props = {

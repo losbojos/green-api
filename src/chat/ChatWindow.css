@@ -23,13 +23,12 @@
 
 .chat-message.outgoing {
 	align-self: flex-end;
-	font-style: italic;
-	background-color: color-mix(in srgb, var(--border) 95%, green);
+	background-color: var(--chat-out);
 }
 
 .chat-message.incoming {
 	align-self: flex-start;
-	background-color: color-mix(in srgb, var(--border) 95%, white);
+	background-color: var(--chat-in);
 }
 
 .chat-message__text,
@@ -47,7 +46,7 @@
 
 .chat-window__sender {
 	display: flex;
-	align-items: flex-end;
+	align-items: center;
 	gap: 8px;
 	padding: 12px 16px;
 	border-top: 1px solid var(--border);
@@ -59,7 +58,7 @@
 	padding: 10px 12px;
 	border: 1px solid var(--border);
 	border-radius: 8px;
-	background: var(--bg);
+	background-color: var(--chat-out);
 	color: var(--text-h);
 	resize: none;
 	overflow-y: auto;

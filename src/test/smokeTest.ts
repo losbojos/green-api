@@ -74,14 +74,17 @@ async function main() {
 			break;
 		}
 
-		const text = await client.receiveTextMessage(
+		const message = await client.receiveTextMessage(
 			Math.min(MAX_RECEIVE_TIMEOUT, left),
 		);
-		if (text) {
+		if (message) {
 			count += 1;
-			console.log('входящее:', text);
-		} else {
-			console.log('пока пусто, осталось', left, 'с');
+			console.log(
+				`входящее: ${new Date(message.timestamp).toLocaleTimeString([], {
+					hour: '2-digit',
+					minute: '2-digit',
+				})} ${message.text}`,
+			);
 		}
 	}
 

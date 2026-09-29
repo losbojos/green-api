@@ -10,6 +10,7 @@ export type MessageDirection = 'outgoing' | 'incoming';
 
 export type ChatMessage = {
 	id: string;
+	chatId: string;
 	text: string;
 	direction: MessageDirection;
 	timestamp: number;

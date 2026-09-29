@@ -1,4 +1,4 @@
-import type { Chat } from './types';
+import type { Chat } from '../model/types';
 
 function storageKey(idInstance: string) {
 	return `green-api-chats:${idInstance}`;

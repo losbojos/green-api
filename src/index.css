@@ -10,6 +10,8 @@
 	--social-bg: rgba(244, 243, 236, 0.5);
 	--chat-action: #479fff;
 	--chat-action-bg: color-mix(in srgb, var(--chat-action) 20%, transparent);
+	--chat-out: #f0f1f3;
+	--chat-in: #d6ebff;
 	--attention: #d43c2c;
 	--shadow:
 		rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
@@ -44,6 +46,8 @@
 		--accent-bg: rgba(192, 132, 252, 0.15);
 		--accent-border: rgba(192, 132, 252, 0.5);
 		--social-bg: rgba(47, 48, 58, 0.5);
+		--chat-out: #2a2b33;
+		--chat-in: #1a3f66;
 		--shadow:
 			rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
 	}

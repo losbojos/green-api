@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
-import { GreenApiClient } from '../api/client';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { GreenApiClient, MAX_RECEIVE_TIMEOUT } from '../api/client';
 import type { AuthCredentials } from '../auth/AuthCredentials';
 import { ChatListItem } from './ChatListItem';
 import { getChats, saveChats } from './chatStorage';
 import { FindByPhoneModal } from './FindByPhoneModal';
 import './ChatLayout.css';
 import { ChatWindow } from './ChatWindow';
-import type { Chat, ChatMessage } from './types';
+import type { Chat, ChatMessage } from '../model/types';
 
 type Props = {
 	credentials: AuthCredentials;
@@ -30,10 +30,45 @@ export function ChatLayout({ credentials }: Props) {
 	const [messages, setMessages] = useState<Map<string, ChatMessage[]>>(
 		new Map<string, ChatMessage[]>(),
 	);
+	const chatsRef = useRef(chats);
+	chatsRef.current = chats;
 
 	useEffect(() => {
 		saveChats(credentials.idInstance, chats);
 	}, [chats, credentials.idInstance]);
+
+	useEffect(() => {
+		const controller = new AbortController();
+
+		async function poll() {
+			while (!controller.signal.aborted) {
+				try {
+					const message = await client.receiveTextMessage(
+						MAX_RECEIVE_TIMEOUT,
+						controller.signal,
+					);
+					if (!message) continue;
+					if (!chatsRef.current.some((chat) => chat.id === message.chatId)) {
+						continue; // Игнорим сообщения для которых у нас нет чатов (потому что нет пользователей в списке)
+					}
+
+					setMessages((prev) => {
+						const next = new Map(prev);
+						const list = next.get(message.chatId) ?? [];
+						next.set(message.chatId, [...list, message]);
+						return next;
+					});
+				} catch (e) {
+					if (controller.signal.aborted) break;
+					console.error(e);
+					await new Promise((r) => setTimeout(r, 2000));
+				}
+			}
+		}
+
+		poll();
+		return () => controller.abort();
+	}, [client]);
 
 	async function findByPhone(phoneRaw: string) {
 		const phone = phoneRaw.replace(/\D/g, '');
@@ -86,6 +121,7 @@ export function ChatLayout({ credentials }: Props) {
 				...(next.get(chatId) ?? []),
 				{
 					id: idMessage,
+					chatId,
 					text,
 					direction: 'outgoing',
 					timestamp: Date.now(),
