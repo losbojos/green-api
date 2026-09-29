@@ -51,12 +51,16 @@
 }
 
 .chat-item__unread {
-	min-width: 20px;
+	box-sizing: border-box;
 	height: 20px;
+	min-width: 20px;
 	padding: 0 6px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	border-radius: 10px;
 	background: var(--chat-action);
 	color: #fff;
-	font-size: 12px;
-	text-align: center;
+	font-size: 11px;
+	line-height: 1;
 }

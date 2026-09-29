@@ -24,7 +24,9 @@ export function ChatLayout({ credentials }: Props) {
 		[credentials],
 	);
 
-	const [chats, setChats] = useState(() => getChats(credentials.idInstance));
+	const [chats, setChats] = useState(() =>
+		getChats(credentials.idInstance).map((c) => ({ ...c, unread: 0 })),
+	);
 	const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
 	const [isFindOpen, setIsFindOpen] = useState(false);
 	const [error, setError] = useState('');
@@ -34,6 +36,8 @@ export function ChatLayout({ credentials }: Props) {
 	);
 	const chatsRef = useRef(chats);
 	chatsRef.current = chats;
+	const selectedChatRef = useRef(selectedChat);
+	selectedChatRef.current = selectedChat;
 
 	useEffect(() => {
 		saveChats(credentials.idInstance, chats);
@@ -61,6 +65,16 @@ export function ChatLayout({ credentials }: Props) {
 						next.set(message.chatId, [...list, message]);
 						return next;
 					});
+
+					if (selectedChatRef.current?.id !== message.chatId) {
+						setChats((prev) =>
+							prev.map((c) =>
+								c.id === message.chatId
+									? { ...c, unread: c.unread + 1 }
+									: c,
+							),
+						);
+					}
 				} catch (e) {
 					if (controller.signal.aborted) break;
 					console.error(e);
@@ -114,6 +128,15 @@ export function ChatLayout({ credentials }: Props) {
 		}
 	}
 
+	function selectChat(chat: Chat) {
+		setReceiveError('');
+		const opened = { ...chat, unread: 0 };
+		setChats((prev) =>
+			prev.map((c) => (c.id === chat.id ? opened : c)),
+		);
+		setSelectedChat(opened);
+	}
+
 	async function sendMessage(text: string) {
 		if (!selectedChat) return;
 
@@ -160,10 +183,7 @@ export function ChatLayout({ credentials }: Props) {
 								key={chat.id}
 								chat={chat}
 								selected={chat.id === selectedChat?.id}
-								onSelect={() => {
-									setReceiveError('');
-									setSelectedChat(chat);
-								}}
+								onSelect={() => selectChat(chat)}
 							/>
 						))
 					)}
