@@ -32,9 +32,9 @@
 }
 
 .page-main {
-	padding: 24px;
-	border: 1px solid var(--border);
-	border-radius: 8px;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
 }
 
 button {

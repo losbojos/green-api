@@ -53,6 +53,28 @@ export class GreenApiClient {
 		return data.exist ? data.chatId : null;
 	}
 
+	async getContactInfo(chatId: string): Promise<{
+		avatar: string;
+		name: string;
+		contactName: string;
+	}> {
+		const response = await fetch(this.url('getContactInfo'), {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ chatId }),
+		});
+
+		if (!response.ok) {
+			throw new Error(`getContactInfo HTTP ${response.status}`);
+		}
+
+		return (await response.json()) as {
+			avatar: string;
+			name: string;
+			contactName: string;
+		};
+	}
+
 	async sendMessage(chatId: string, message: string): Promise<string> {
 		const response = await fetch(this.url('sendMessage'), {
 			method: 'POST',

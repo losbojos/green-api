@@ -1,6 +1,7 @@
 import './App.css';
 import { AuthForm } from './auth/AuthForm';
 import { useAuth } from './auth/useAuth';
+import { ChatLayout } from './chat/ChatLayout';
 
 function App() {
 	const {
@@ -42,7 +43,9 @@ function App() {
 			</header>
 
 			<main className="page-main">
-				<p>Здесь окно основное.</p>
+				{credentials && (
+					<ChatLayout key={credentials.idInstance} credentials={credentials} />
+				)}
 			</main>
 		</section>
 	);
